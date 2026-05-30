@@ -7,16 +7,18 @@ const Navbar = () => {
   const { logout, authUser } = useAuthStore();
 
   return (
-    <header className="bg-base-100 border-b border-base-200 sticky top-0 z-40 backdrop-blur-lg bg-base-100/80">
+    <header className="bg-base-100/95 border-b border-base-300 sticky top-0 z-50 backdrop-blur-md">
       <div className="container mx-auto px-4 h-16">
         <div className="flex items-center justify-between h-full">
           {/* Logo Section */}
           <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-all">
-              <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
+            <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+              <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                 <MessageSquare className="w-5 h-5 text-primary" />
               </div>
-              <h1 className="text-lg font-bold">Chatify</h1>
+              <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Chatify
+              </h1>
             </Link>
           </div>
 
@@ -24,7 +26,7 @@ const Navbar = () => {
           <div className="flex items-center gap-2">
             <Link
               to={"/settings"}
-              className="btn btn-sm gap-2 transition-colors"
+              className="btn btn-sm btn-ghost gap-2 hover:btn-primary transition-all"
             >
               <Settings className="w-4 h-4" />
               <span className="hidden sm:inline">Settings</span>
@@ -32,13 +34,19 @@ const Navbar = () => {
 
             {authUser && (
               <>
-                <Link to={"/profile"} className="btn btn-sm gap-2">
-                  <User className="size-5" />
+                <Link 
+                  to={"/profile"} 
+                  className="btn btn-sm btn-ghost gap-2 hover:btn-primary transition-all"
+                >
+                  <User className="size-4" />
                   <span className="hidden sm:inline">Profile</span>
                 </Link>
 
-                <button className="btn btn-sm gap-2" onClick={logout}>
-                  <LogOut className="size-5" />
+                <button 
+                  className="btn btn-sm btn-ghost gap-2 hover:btn-error transition-all" 
+                  onClick={logout}
+                >
+                  <LogOut className="size-4" />
                   <span className="hidden sm:inline">Logout</span>
                 </button>
               </>

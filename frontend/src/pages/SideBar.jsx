@@ -30,14 +30,14 @@ const SideBar = () => {
   }
 
   return (
-    <aside className="h-full w-20 lg:w-72 border-r border-base-300 flex flex-col">
-      <div className="border-b border-base-300 w-full p-5">
+    <aside className="h-full w-20 lg:w-72 border-r border-base-300 flex flex-col min-h-0">
+      <div className="border-b border-base-300 w-full p-5 flex-shrink-0">
         <div className="flex items-center gap-2">
           <Users className="size-6" />
           <span className="font-medium hidden lg:block">Contacts</span>
         </div>
       </div>
-      <div className="p-3">
+      <div className="p-3 flex-shrink-0">
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
@@ -45,11 +45,11 @@ const SideBar = () => {
             onChange={() => setShowOnlineOnly(!showOnlineOnly)}
             className="checkbox checkbox-sm"
           />
-          <span className="text-sm">Show Online Only</span>
+          <span className="text-sm hidden lg:block">Show Online Only</span>
         </label>
       </div>
 
-      <div className="overflow-y-auto w-full py-3">
+      <div className="flex-1 overflow-y-auto min-h-0 py-3">
         {filteredUsers?.map((user) => (
           <button
             key={user._id}
@@ -60,7 +60,7 @@ const SideBar = () => {
                 : ""
             }`}
           >
-            <div className="relative mx-auto lg:mx-0">
+            <div className="relative mx-auto lg:mx-0 flex-shrink-0">
               <img
                 src={user.profilePic || "/avatar.png"}
                 alt={user.fullName}
@@ -70,7 +70,7 @@ const SideBar = () => {
                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border border-base-100 rounded-full"></div>
               )}
             </div>
-            <div className="hidden lg:block text-left min-w-0">
+            <div className="hidden lg:block text-left min-w-0 flex-1">
               <div className="font-medium truncate">{user.fullName}</div>
             </div>
           </button>
