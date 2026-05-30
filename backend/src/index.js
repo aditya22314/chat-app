@@ -32,7 +32,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
 // Serve frontend in production
-const distPath = path.join(__dirname, "../frontend/dist");
+const distPath = path.join(__dirname, "../../frontend/dist");
 app.use(express.static(distPath));
 
 // Catch-all route for SPA
