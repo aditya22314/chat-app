@@ -31,15 +31,14 @@ const PORT = process.env.PORT || 5001;
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-// 👇 FIXED: Changed = to === (comparison, not assignment)
-if (process.env.NODE_ENV === "production") {
-  // 👇 Now __dirname works!
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+// Serve frontend in production
+const distPath = path.join(__dirname, "../frontend/dist");
+app.use(express.static(distPath));
 
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-  });
-}
+// Catch-all route for SPA
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
 
 server.listen(PORT, () => {
   connectDb();
