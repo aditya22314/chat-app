@@ -54,8 +54,8 @@ export const useAuthStore = create((set, get) => ({
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
-      set({ authUser: null });
       get().disconnectSocket();
+      set({ authUser: null, onlineUsers: [] });
       toast.success("Log out succesfully");
     } catch (error) {
       toast.error(error.response.data.message);
@@ -83,6 +83,7 @@ export const useAuthStore = create((set, get) => ({
     if (!authUser || get().socket?.connected) return;
 
     const socket = io(BASE_URL, {
+      withCredentials: true,
       query: {
         userId: authUser._id,
       },
@@ -103,10 +104,11 @@ export const useAuthStore = create((set, get) => ({
       toast.error("Unable to connect to live chat server.");
     });
 
-    set({ socket });
     socket.on("getOnlineUsers", (userIds) => {
       set({ onlineUsers: userIds });
-    }); 
+    });
+
+    set({ socket });
   },
   disconnectSocket: () => {
     const socket = get().socket;

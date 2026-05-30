@@ -51,17 +51,26 @@ export const useChatStore = create((set, get) => ({
   subscribeToMessages: () => {
     const { selectedUser } = get();
     if (!selectedUser) return;
-    const socket = useAuthStore.getState().socket; //using getstate because we are using another store state outside a react component
+    const socket = useAuthStore.getState().socket;
+    if (!socket) return;
 
+    socket.off("newMessage");
     socket.on("newMessage", (newMessage) => {
-      set({ messages: [...get().messages, newMessage] });
+      const { selectedUser: currentSelectedUser } = get();
+      if (!currentSelectedUser) return;
+
+      if (
+        newMessage.senderId === currentSelectedUser._id ||
+        newMessage.receiverId === currentSelectedUser._id
+      ) {
+        set({ messages: [...get().messages, newMessage] });
+      }
     });
   },
   unsubscribeToMessages: () => {
-    const { selectedUser } = get();
-    if (!selectedUser) return;
-    const socket = useAuthStore.getState().socket; //using getstate because we are using another store state outside a react component
+    const socket = useAuthStore.getState().socket;
+    if (!socket) return;
 
-    socket.off("newMessage"); 
+    socket.off("newMessage");
   },
 }));
