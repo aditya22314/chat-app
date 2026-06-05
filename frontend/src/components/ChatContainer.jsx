@@ -25,32 +25,34 @@ const ChatContainer = () => {
     return () => {
       unsubscribeToMessages();
     };
-  }, [selectedUser, getMessages]);
+  }, [selectedUser, getMessages, subscribeToMessages, unsubscribeToMessages]);
 
   if (isMessagesLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center bg-base-100 text-base-content">
         <span className="loading loading-spinner"></span>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full">
+    <div className="flex-1 bg-base-100 text-base-content flex flex-col h-full">
       <ChatHeader />
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
-        {console.log(messages, "998")}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 bg-base-100">
         {messages?.map((message) => (
+          (() => {
+            const isMe = message.senderId === authUser._id;
+            return (
           <div
             key={message?._id}
             ref={messageRef}
-            className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
+            className={`chat ${isMe ? "chat-end" : "chat-start"}`}
           >
             <div className="chat-image avatar size-10">
               <div className="rounded-full border">
                 <img
                   src={
-                    message.senderId === authUser._id
+                    isMe
                       ? authUser.profilePic || "/avatar.png"
                       : selectedUser.profilePic
                   }
@@ -61,7 +63,11 @@ const ChatContainer = () => {
             <div className="chat-header text-xs opacity-50 mb-1">
               {formatMessageTime(message.createdAt)}
             </div>
-            <div className="chat-bubble">
+            <div
+              className={`chat-bubble ${
+                isMe ? "chat-bubble-primary text-primary-content" : "chat-bubble text-base-content"
+              }`}
+            >
               {message.image && (
                 <img
                   src={message.image}
@@ -72,6 +78,8 @@ const ChatContainer = () => {
               {message.text && <p>{message.text}</p>}
             </div>
           </div>
+            );
+          })()
         ))}
       </div>
       <MessageInput />

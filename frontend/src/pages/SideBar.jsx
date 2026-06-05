@@ -7,7 +7,8 @@ const SideBar = () => {
   const { users, getUsers, selectedUser, setSelectedUser, isUsersLoading } =
     useChatStore();
 
-  const { onlineUsers } = useAuthStore();
+  const { onlineUsers, authUser } = useAuthStore();
+  console.log(authUser);
 
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
@@ -17,7 +18,7 @@ const SideBar = () => {
 
   const filteredUsers = showOnlineOnly
     ? users.filter((user) => onlineUsers.includes(user._id))
-    : users;
+    : users.filter((user) =>user._id!=authUser._id);
 
   if (isUsersLoading) {
     return (
@@ -75,7 +76,6 @@ const SideBar = () => {
             </div>
           </button>
         ))}
-        
 
         {users.length === 0 && (
           <div className="text-center text-zinc-500 py-4">No users found</div>
