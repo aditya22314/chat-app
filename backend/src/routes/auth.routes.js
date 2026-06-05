@@ -1,6 +1,7 @@
 import express from "express";
 import {
   checkAuth,
+  googleAuth,
   Login,
   Logout,
   Signup,
@@ -13,6 +14,8 @@ const router = express.Router();
 router.post("/signup", Signup);
 
 router.post("/login", Login);
+
+router.post("/google", googleAuth);
 
 router.post("/logout", Logout);
 

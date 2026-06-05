@@ -1,6 +1,6 @@
 import React from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import { MessageSquare, Settings, User, LogOut } from "lucide-react";
+import { MessageSquare, Settings, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
@@ -34,16 +34,20 @@ const Navbar = () => {
 
             {authUser && (
               <>
-                <Link 
-                  to={"/profile"} 
+                <Link
+                  to={"/profile"}
                   className="btn btn-sm btn-ghost gap-2 hover:btn-primary transition-all"
                 >
-                  <User className="size-4" />
+                  <img
+                    src={authUser.profilePic || "/avatar.png"}
+                    alt={authUser.fullName || "Profile"}
+                    className="size-6 rounded-full object-cover"
+                  />
                   <span className="hidden sm:inline">Profile</span>
                 </Link>
 
-                <button 
-                  className="btn btn-sm btn-ghost gap-2 hover:btn-error transition-all" 
+                <button
+                  className="btn btn-sm btn-ghost gap-2 hover:btn-error transition-all"
                   onClick={logout}
                 >
                   <LogOut className="size-4" />

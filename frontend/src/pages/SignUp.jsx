@@ -11,6 +11,7 @@ import {
   Loader2,
 } from "lucide-react";
 import AuthImagePattern from "../components/AuthImagePattern";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 import toast from "react-hot-toast";
 
 const SignUp = () => {
@@ -182,6 +183,14 @@ const SignUp = () => {
               )}
             </button>
           </form>
+
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-base-300" />
+            <span className="text-sm text-base-content/60">or</span>
+            <div className="h-px flex-1 bg-base-300" />
+          </div>
+
+          <GoogleLoginButton />
 
           <div className="text-center">
             <p className="text-base-content/60">

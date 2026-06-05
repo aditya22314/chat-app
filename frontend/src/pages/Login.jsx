@@ -3,6 +3,7 @@ import { Navigate, Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { MessageSquare, Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import AuthImagePattern from "../components/AuthImagePattern";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 import toast from "react-hot-toast";
 
 const Login = () => {
@@ -16,7 +17,8 @@ const Login = () => {
   if (authUser) {
     return <Navigate to="/" />;
   }
-
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+  console.log("googleClientId", googleClientId);
   const validateForm = () => {
     const { email, password } = formData;
     if (!email || !password) {
@@ -45,9 +47,7 @@ const Login = () => {
                 <MessageSquare className="size-6 text-primary" />
               </div>
               <h1 className="text-2xl font-bold mt-2">Welcome Back</h1>
-              <p className="text-base-content/60">
-                Sign in to your account
-              </p>
+              <p className="text-base-content/60">Sign in to your account</p>
             </div>
           </div>
 
@@ -124,6 +124,13 @@ const Login = () => {
               )}
             </button>
           </form>
+
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-base-300" />
+            <span className="text-sm text-base-content/60">or</span>
+            <div className="h-px flex-1 bg-base-300" />
+          </div>
+          <GoogleLoginButton />
 
           <div className="text-center">
             <p className="text-base-content/60">

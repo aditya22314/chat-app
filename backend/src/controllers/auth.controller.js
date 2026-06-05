@@ -1,7 +1,18 @@
 import bcrypt from "bcryptjs";
+import { OAuth2Client } from "google-auth-library";
 import { generateToken } from "../lib/utils/index.js";
 import { User } from "../models/user.model.js";
 import cloudinary from "../lib/cloudinary.js";
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+const formatUserResponse = (user) => ({
+  _id: user._id,
+  fullName: user.fullName,
+  email: user.email,
+  profilePic: user.profilePic,
+  authProvider: user.authProvider,
+});
 export const Signup = async (req, res) => {
   const { fullName, email, password } = req.body;
 
@@ -35,12 +46,7 @@ export const Signup = async (req, res) => {
       //generate jwt token here ..
       generateToken(newUser._id, res);
       await newUser.save();
-      res.status(201).json({
-        _id: newUser._id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        profilePic: newUser.profilePic,
-      });
+      res.status(201).json(formatUserResponse(newUser));
     } else {
       res.status(400).json({ message: "Invalid user data" });
     }
@@ -59,6 +65,12 @@ export const Login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    if (!user.password) {
+      return res.status(400).json({
+        message: "This account uses Google sign-in. Please continue with Google.",
+      });
+    }
+
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
@@ -66,15 +78,72 @@ export const Login = async (req, res) => {
     }
 
     generateToken(user._id, res);
-    res.status(200).json({
-      _id: user._id,
-      fullName: user.fullName,
-      email: user.email,
-      profilePic: user.profilePic,
-    });
+    res.status(200).json(formatUserResponse(user));
   } catch (err) {
     console.log("Error in login controller", err);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const googleAuth = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    if (!token) {
+      return res.status(400).json({ message: "Google token is required" });
+    }
+
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      return res.status(500).json({ message: "Google OAuth is not configured" });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name, picture } = payload;
+
+    if (!googleId || !email) {
+      return res.status(400).json({ message: "Invalid Google account data" });
+    }
+
+    let user = await User.findOne({ googleId });
+
+    if (!user) {
+      const existingUser = await User.findOne({ email });
+
+      if (existingUser) {
+        if (existingUser.password && !existingUser.googleId) {
+          existingUser.googleId = googleId;
+          existingUser.authProvider = "google";
+          if (!existingUser.profilePic && picture) {
+            existingUser.profilePic = picture;
+          }
+          await existingUser.save();
+          user = existingUser;
+        } else {
+          return res.status(400).json({
+            message: "An account with this email already exists",
+          });
+        }
+      } else {
+        user = await User.create({
+          fullName: name || email.split("@")[0],
+          email,
+          googleId,
+          authProvider: "google",
+          profilePic: picture,
+        });
+      }
+    }
+
+    generateToken(user._id, res);
+    res.status(200).json(formatUserResponse(user));
+  } catch (err) {
+    console.log("Error in googleAuth controller", err);
+    res.status(401).json({ message: "Google authentication failed" });
   }
 };
 

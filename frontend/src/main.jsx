@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./index.css";
 import App from "./App.jsx";
 import HomePage from "./pages/HomePage.jsx";
@@ -39,10 +40,15 @@ const router = createBrowserRouter([
   },
 ]);
 
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+
+
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Toaster />
-
-    <RouterProvider router={router} />
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <Toaster />
+      <RouterProvider router={router} />
+    </GoogleOAuthProvider>
   </StrictMode>,
 );
